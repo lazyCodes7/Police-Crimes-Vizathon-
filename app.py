@@ -9,7 +9,7 @@ import copy
 app = dash.Dash(__name__)
 death_arrests_df = pd.read_csv('death_arrests.csv')
 fatal_encounters_df = pd.read_csv('encounters.csv')
-
+server = app.server
 states = death_arrests_df['State'].unique().tolist()
 ages = list(fatal_encounters_df["Subject's age"].unique())
 races = fatal_encounters_df["Subject's race"].unique().tolist()
