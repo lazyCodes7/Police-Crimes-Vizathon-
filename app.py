@@ -212,7 +212,7 @@ app.layout = html.Div(
             [
                 html.Div(
                     [
-                        dcc.Graph(id='map_graph')
+                        dcc.Graph(id='bar_graph')
                     ],
                     className='pretty_container six columns',
                 ),
@@ -231,6 +231,20 @@ app.layout = html.Div(
                     [
                         dcc.Graph(
                             id='line_graph',
+                            )
+                    ],
+                    className='pretty_container twelve columns',
+                ),
+  
+            ],
+            className='row'
+        ),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        dcc.Graph(
+                            id='hist_graph',
                             )
                     ],
                     className='pretty_container twelve columns',
@@ -309,35 +323,37 @@ def update_figure(race_types, age_options, year_slider):
     figure = dict(data=data, layout=layout_count)
     return figure
 
-@app.callback(Output('map_graph', 'figure'),
+@app.callback(Output('bar_graph', 'figure'),
               [Input('race_types', 'value'),
                Input('age_options', 'value'),
                Input('year_slider', 'value')])
 def update_map(race_types, age_options, year_slider):
     filtered_df = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
     data = []
+    counts = fatal_encounters_df['Dispositions/Exclusions INTERNAL USE, NOT FOR ANALYSIS'].value_counts()
+    keys = counts.keys()[:5]
+    values = counts.values[:5]
     layout_count = copy.deepcopy(layout)
-    '''data.append(
+    data.append(
         dict(
-            type = 'choropleth',
-            colorscale = 'Viridis',
-            locations = filtered_df['Location of death (state)'],
-            z = filtered_df["Age Range"],
-            locationmode = 'USA-states',
-
+            type='bar',
+            name=keys,
+            x=keys,
+            y=values,
         )
-    )'''
-    fig = px.choropleth(locations=filtered_df['Location of death (state)'],
+    )
+    '''fig = px.choropleth(locations=filtered_df['Location of death (state)'],
                     color=filtered_df["Subject's race"],
                     title="Race distribution for the fatal encounters",
                     color_continuous_scale='spectral_r',
                     hover_name=filtered_df['Location of death (state)'],
                     locationmode='USA-states',
                     labels={'Current Unemployment Rate':'Age Range %'},
-                    scope='usa')
-    #figure = dict(data=data, layout=layout_count)
+                    scope='usa')'''
+    layout_count['title'] = "Dispositions: " + str(year_slider[0]) + "-" + str(year_slider[1])
+    figure = dict(data=data, layout=layout_count)
 
-    return fig
+    return figure
 @app.callback(Output('line_graph', 'figure'),
               [Input('race_types', 'value'),
                Input('age_options', 'value'),
@@ -392,7 +408,7 @@ def update_line_plot(race_types, age_options, year_slider):
         
 
     ]
-    layout_aggregate['title'] = "Cause of murder"
+    layout_aggregate['title'] = "Cause of death"
     figure = dict(data=data, layout=layout_aggregate)
 
     return figure
@@ -449,11 +465,40 @@ def update_pie_plot(race_types, age_options, year_slider):
     figure = dict(data=data, layout=layout_pie)
     return figure
 
+@app.callback(Output('hist_graph', 'figure'),
+              [Input('race_types', 'value'),
+               Input('age_options', 'value'),
+               Input('year_slider', 'value')])
+def update_hist_plot(race_types, age_options, year_slider):
+    layout_hist = copy.deepcopy(layout)
+    filtered_df = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
+    '''data = [
+        dict(
+            type='histogram',
+            x=filtered_df["Date (Year)"],
+            y=filtered_df["Subject's race"],
+            color=filtered_df["Cause of death"]
+
+        )
+    ]
+    layout_hist['title'] = "Fatal Encounters vs Race: " + str(year_slider[0]) + str(year_slider[1])
+
+    fig = dict(data=data)
+
+    return fig'''
+    fig = px.histogram(filtered_df, x="Date (Year)", y="Subject's race",color="Cause of death", color_discrete_sequence= px.colors.qualitative.Set2)
+    return fig
+
+
+
+
 @app.callback(Output('encounters_count', 'children'),
               [Input('race_types', 'value'),
                Input('age_options', 'value'),
                Input('year_slider', 'value')])
 def update_encounters_text(race_types, age_options, year_slider):
+    filtered_df = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
+
 
     dff = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
     return len(dff)
