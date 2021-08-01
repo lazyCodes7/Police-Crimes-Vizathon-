@@ -49,11 +49,11 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H2(
-                            'New York Oil and Gas',
+                            'Police Crimes Dataset',
 
                         ),
                         html.H4(
-                            'Production Overview',
+                            'Analytical Overview',
                         )
                     ],
 
@@ -145,54 +145,48 @@ app.layout = html.Div(
                             [
                                 html.Div(
                                     [
-                                        html.P("No. of Wells"),
+                                        html.P("Encounters"),
                                         html.H6(
-                                            id="well_text",
+                                            id="encounters_count",
                                             className="info_text"
                                         )
                                     ],
-                                    id="wells",
+                                    id="encounters",
                                     className="pretty_container"
                                 ),
-
                                 html.Div(
                                     [
-                                        html.Div(
-                                            [
-                                                html.P("Gas"),
-                                                html.H6(
-                                                    id="gasText",
-                                                    className="info_text"
-                                                )
-                                            ],
-                                            id="gas",
-                                            className="pretty_container"
-                                        ),
-                                        html.Div(
-                                            [
-                                                html.P("Oil"),
-                                                html.H6(
-                                                    id="oilText",
-                                                    className="info_text"
-                                                )
-                                            ],
-                                            id="oil",
-                                            className="pretty_container"
-                                        ),
-                                        html.Div(
-                                            [
-                                                html.P("Water"),
-                                                html.H6(
-                                                    id="waterText",
-                                                    className="info_text"
-                                                )
-                                            ],
-                                            id="water",
-                                            className="pretty_container"
-                                        ),
+                                        html.P("Median Age"),
+                                        html.H6(
+                                            id="median_age",
+                                            className="info_text"
+                                        )
                                     ],
-                                    id="tripleContainer",
-                                )
+                                    id="age",
+                                    className="pretty_container"
+                                ),
+                                html.Div(
+                                    [
+                                        html.P("Most affected gender"),
+                                        html.H6(
+                                            id="affected_gender",
+                                            className="info_text"
+                                        )
+                                    ],
+                                    id="gender",
+                                    className="pretty_container"
+                                ),
+                                html.Div(
+                                    [
+                                        html.P("Most affected race"),
+                                        html.H6(
+                                            id="affected_race",
+                                            className="info_text"
+                                        )
+                                    ],
+                                    id="race",
+                                    className="pretty_container"
+                                ),                                
 
                             ],
                             id="infoContainer",
@@ -239,14 +233,9 @@ app.layout = html.Div(
                             id='line_graph',
                             )
                     ],
-                    className='pretty_container eight columns',
+                    className='pretty_container twelve columns',
                 ),
-                html.Div(
-                    [
-                        dcc.Graph(id='aggregate_graph')
-                    ],
-                    className='pretty_container four columns',
-                ),
+  
             ],
             className='row'
         ),
@@ -339,7 +328,8 @@ def update_map(race_types, age_options, year_slider):
         )
     )'''
     fig = px.choropleth(locations=filtered_df['Location of death (state)'],
-                    color=filtered_df["Age Range"],
+                    color=filtered_df["Subject's race"],
+                    title="Race distribution for the fatal encounters",
                     color_continuous_scale='spectral_r',
                     hover_name=filtered_df['Location of death (state)'],
                     locationmode='USA-states',
@@ -448,7 +438,7 @@ def update_pie_plot(race_types, age_options, year_slider):
             )
             
     ]
-    layout_pie['title'] = 'Gender distribution: {} to {}'.format(
+    layout_pie['title'] = 'Gender distribution + Top-5 states for encounters : {} to {}'.format(
         year_slider[0], year_slider[1])
     layout_pie['font'] = dict(color='#777777')
     layout_pie['legend'] = dict(
@@ -459,12 +449,44 @@ def update_pie_plot(race_types, age_options, year_slider):
     figure = dict(data=data, layout=layout_pie)
     return figure
 
+@app.callback(Output('encounters_count', 'children'),
+              [Input('race_types', 'value'),
+               Input('age_options', 'value'),
+               Input('year_slider', 'value')])
+def update_encounters_text(race_types, age_options, year_slider):
+
+    dff = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
+    return len(dff)
+
+@app.callback(Output('median_age', 'children'),
+              [Input('race_types', 'value'),
+               Input('age_options', 'value'),
+               Input('year_slider', 'value')])
+def update_median_age(race_types, age_options, year_slider):
+    dff = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
+    return int(dff["Age Range"].mean())
+
+
+@app.callback(Output('affected_gender', 'children'),
+              [Input('race_types', 'value'),
+               Input('age_options', 'value'),
+               Input('year_slider', 'value')])
+def update_most_affected_gender(race_types, age_options, year_slider):
+    dff = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
+    most_affected = dff["Subject's gender"].value_counts().keys()
+    return most_affected[0]
 
 
 
 
-
-
+@app.callback(Output('affected_race', 'children'),
+              [Input('race_types', 'value'),
+               Input('age_options', 'value'),
+               Input('year_slider', 'value')])
+def update_most_affected_race(race_types, age_options, year_slider):
+    dff = filter_dataframe(fatal_encounters_df,age_options, race_types, year_slider)
+    most_affected = dff["Subject's race"].value_counts().keys()
+    return most_affected[0]
 
 
 
