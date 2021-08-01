@@ -9,7 +9,6 @@ You can.
 - Analyze the causes of death in these encounters
 - We could also analyze the races who faced these encounters and much more at [https://police-crimes-viz.herokuapp.com/]()
 
-
 ## How we built it
 I first had to find a dataset and finally after looking for hours I was able to settle on one that I liked. Having zero idea about Dash, I had to learn it so that I could build something that was interactive and fun to use. But I was able to do all of this and enjoy my first vizathon as well:)
 
@@ -20,6 +19,13 @@ I first had to find a dataset and finally after looking for hours I was able to 
 
 ## Accomplishments that we're proud of
 I am really proud that I was able to learn how to use Dash in a short amount of time and build something good. Honestly, at first, I was going to give up but then I decided to keep on going and I am happy that I did.
+
+
+## Some plottings
+![Screenshot from 2021-08-01 21-40-49](https://user-images.githubusercontent.com/53506835/127777854-64b6ff9e-4316-44c0-acf1-51661d51d501.png)
+![Screenshot from 2021-08-01 21-44-10](https://user-images.githubusercontent.com/53506835/127777937-6b5883e3-11fa-480e-a060-342ecfb116be.png)
+
+
 
 ## What we learned
 - Learned how to use Dash
