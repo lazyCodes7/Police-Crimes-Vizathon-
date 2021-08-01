@@ -14,7 +14,6 @@ states = death_arrests_df['State'].unique().tolist()
 ages = list(fatal_encounters_df["Subject's age"].unique())
 races = fatal_encounters_df["Subject's race"].unique().tolist()
 first_graph_attr = death_arrests_df.columns.tolist()[3:6]
-mapbox_access_token = 'pk.eyJ1IjoiamFja2x1byIsImEiOiJjajNlcnh3MzEwMHZtMzNueGw3NWw5ZXF5In0.fk8k06T96Ml9CLGgKmk81w'
 
 layout = dict(
     autosize=True,
@@ -30,15 +29,7 @@ layout = dict(
     paper_bgcolor="#F9F9F9",
     legend=dict(font=dict(size=10), orientation='h'),
     title='Satellite Overview',
-    mapbox=dict(
-        accesstoken=mapbox_access_token,
-        style="light",
-        center=dict(
-            lon=-78.05,
-            lat=42.54
-        ),
-        zoom=7,
-    )
+
 )
 
 app.layout = html.Div(
@@ -59,17 +50,13 @@ app.layout = html.Div(
 
                     className='eight columns'
                 ),
-                html.Img(
-                    src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe.png",
-                    className='two columns',
-                ),
                 html.A(
                     html.Button(
-                        "Learn More",
+                        "View notebook on GitHub",
                         id="learnMore"
 
                     ),
-                    href="https://plot.ly/dash/pricing/",
+                    href="https://github.com/lazyCodes7/Police-Crimes-Vizathon-",
                     className="two columns"
                 )
             ],
@@ -99,7 +86,7 @@ app.layout = html.Div(
                             id='age_selector',
                             options=[
                                 {'label': 'All ', 'value': 'all'},
-                                {'label': 'Active only ', 'value': 'active'},
+                                {'label': 'Default', 'value': 'active'},
                                 {'label': 'Customize ', 'value': 'custom'}
                             ],
                             value='all',
@@ -121,7 +108,7 @@ app.layout = html.Div(
                             id='race_type_selector',
                             options=[
                                 {'label': 'All ', 'value': 'all'},
-                                {'label': 'Productive only ',
+                                {'label': 'Default',
                                     'value': 'productive'},
                                 {'label': 'Customize ', 'value': 'custom'}
                             ],
@@ -319,7 +306,7 @@ def update_figure(race_types, age_options, year_slider):
             ),
         )
     )
-    layout_count['title'] = 'People Killed by Police'
+    layout_count['title'] = 'People Killed in Fatal Encounters: ' + str(year_slider[0]) + "-" + str(year_slider[1])
     figure = dict(data=data, layout=layout_count)
     return figure
 
